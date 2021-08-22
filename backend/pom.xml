@@ -40,6 +40,31 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>failsafe</id>
+            <!-- Look at https://maven.apache.org/surefire/maven-surefire-plugin/examples/inclusion-exclusion.html
+                 and https://maven.apache.org/surefire/maven-failsafe-plugin/examples/inclusion-exclusion.html
+                 for patterns of classes inclusion in tests and IT -->
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.22.2</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
