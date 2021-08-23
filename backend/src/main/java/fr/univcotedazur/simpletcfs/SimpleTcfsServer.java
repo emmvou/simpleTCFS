@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SimpleTcfsApplication {
+public class SimpleTcfsServer {
 
     public static void main(String[] args) {
-        SpringApplication.run(SimpleTcfsApplication.class, args);
+        SpringApplication.run(SimpleTcfsServer.class, args);
     }
 
 }
