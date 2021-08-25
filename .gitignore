@@ -10,6 +10,7 @@ target/
 **/javadoc/
 **/apidocs/
 **/testapidocs/
+**/spring-shell.log
 
 ### STS ###
 .apt_generated
