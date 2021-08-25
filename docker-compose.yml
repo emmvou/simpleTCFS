@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  # The Cookie Factory backend in SpringBoot
+   tcf_server:
+    image: pcollet/tcf-spring-backend
+    container_name: server
+    networks:
+      mvp_net:
+        ipv4_address: 172.28.0.2
+
+  # A simple java CLI
+   tcf_cli:
+    image: pcollet/tcf-spring-cli
+    container_name: cli
+    environment:
+      - SERVER_URL=http://172.28.0.2:8080
+    command: ["./wait-for-it.sh", "tcf_server:8080", "--", "java", "-jar", "/app.jar", "--tcf.host.baseurl=$SERVER_URL"]
+    depends_on:
+      - tcf_server
+    stdin_open: true
+    tty: true
+    networks:
+      mvp_net:
+
+# Network setup (ipam setup to enable ipv4 addresses)
+networks:
+   mvp_net:
+     ipam:
+       driver: default
+       config:
+         - subnet: 172.28.0.0/16
