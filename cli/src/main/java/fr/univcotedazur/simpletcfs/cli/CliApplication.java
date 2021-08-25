@@ -24,6 +24,9 @@ public class CliApplication {
  */
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
+
+        System.err.println("TCF HOST BASEURL : " + serverHostandPort);
+
         return builder
                 .rootUri(serverHostandPort)
                 .setConnectTimeout(Duration.ofMillis(3000))
