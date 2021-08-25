@@ -11,7 +11,7 @@
     <groupId>fr.univ-cotedazur</groupId>
     <artifactId>simpleTCFS</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>simpleTCFS</name>
     <description>simpleTCFS</description>
     <properties>
