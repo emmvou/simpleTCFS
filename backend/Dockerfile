@@ -1,8 +1,8 @@
 # Traditional docker build with a Dockerfile
 
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM openjdk:11-slim-bullseye
 
-MAINTAINER Philippe Collet (philippe.collet@univ-cotedazur.fr)
+LABEL org.opencontainers.image.authors="Philippe Collet philippe.collet@univ-cotedazur.fr"
 
 ARG JAR_FILE
 
