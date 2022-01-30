@@ -30,7 +30,7 @@ public class CustomerCareController {
     }
 
     private CustomerDto convertCustomerToDto (Customer customer) { // In more complex cases, we could use ModelMapper
-      return new CustomerDto(customer.getName(), customer.getCreditCard());
+      return new CustomerDto(customer.getId(),customer.getName(), customer.getCreditCard());
     }
 
 }
