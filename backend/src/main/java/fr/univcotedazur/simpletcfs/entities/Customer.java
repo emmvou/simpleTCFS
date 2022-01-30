@@ -54,6 +54,7 @@ public class Customer implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
+        if (!getId().equals(customer.getId())) return false;
         if (!getName().equals(customer.getName())) return false;
         if (!getCreditCard().equals(customer.getCreditCard())) return false;
         return orders.equals(customer.orders);
@@ -62,7 +63,8 @@ public class Customer implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = getName().hashCode();
+        int result = getId().hashCode();
+        result = 31 * result + getName().hashCode();
         result = 31 * result + getCreditCard().hashCode();
         return result;
     }

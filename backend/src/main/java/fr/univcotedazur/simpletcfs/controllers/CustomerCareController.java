@@ -26,6 +26,7 @@ public class CustomerCareController {
     @PostMapping(path = "register", consumes = APPLICATION_JSON_VALUE) // path is a REST CONTROLLER NAME
     public CustomerDto register(@RequestBody CustomerDto cusdto) throws AlreadyExistingCustomerException {
         // Note that there is no validation at all on the CustomerDto mapped
+        // and no validation on the customer being already
         return convertCustomerToDto(registry.register(cusdto.getName(), cusdto.getCreditCard()));
     }
 

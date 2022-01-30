@@ -21,14 +21,20 @@ public class CustomerRegistry implements CustomerRegistration, CustomerFinder {
         if(findByName(name).isPresent())
             throw new AlreadyExistingCustomerException(name);
         Customer newcustomer = new Customer(name, creditCard);
-        memory.getCustomers().put(name, newcustomer);
+        memory.getCustomers().put(newcustomer.getId(), newcustomer);
         return newcustomer;
     }
 
     @Override
     public Optional<Customer> findByName(String name) {
-        if (memory.getCustomers().containsKey(name))
-            return Optional.of(memory.getCustomers().get(name));
+        return memory.getCustomers().values().stream()
+                 .filter(cust -> name.equals(cust.getName())).findAny();
+    }
+
+    @Override
+    public Optional<Customer> findById(String id) {
+        if (memory.getCustomers().containsKey(id))
+            return Optional.of(memory.getCustomers().get(id));
         else
             return Optional.empty();
     }

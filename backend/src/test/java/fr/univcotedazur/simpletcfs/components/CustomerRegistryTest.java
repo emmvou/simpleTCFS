@@ -48,8 +48,9 @@ class CustomerRegistryTest {
         Customer returned = registry.register(name, creditCard);
         Optional<Customer> customer = finder.findByName(name);
         assertTrue(customer.isPresent());
-        assertEquals(customer.get(),returned);
         Customer john = customer.get();
+        assertEquals(john,returned);
+        assertEquals(john,finder.findById(returned.getId()).get());
         assertEquals(name, john.getName());
         assertEquals(creditCard, john.getCreditCard());
     }

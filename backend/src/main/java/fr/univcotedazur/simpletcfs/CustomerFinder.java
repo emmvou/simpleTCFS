@@ -8,4 +8,6 @@ public interface CustomerFinder {
 
     Optional<Customer> findByName(String name);
 
+    Optional<Customer> findById(String id);
+
 }
