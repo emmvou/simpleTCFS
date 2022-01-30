@@ -8,6 +8,8 @@ import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.exceptions.AlreadyExistingCustomerException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -24,10 +26,16 @@ public class CustomerCareController {
     private CustomerRegistration registry;
 
     @PostMapping(path = "register", consumes = APPLICATION_JSON_VALUE) // path is a REST CONTROLLER NAME
-    public CustomerDto register(@RequestBody CustomerDto cusdto) throws AlreadyExistingCustomerException {
+    public ResponseEntity<CustomerDto> register(@RequestBody CustomerDto cusdto)  {
         // Note that there is no validation at all on the CustomerDto mapped
         // and no validation on the customer being already
-        return convertCustomerToDto(registry.register(cusdto.getName(), cusdto.getCreditCard()));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(convertCustomerToDto(registry.register(cusdto.getName(), cusdto.getCreditCard())));
+        } catch (AlreadyExistingCustomerException e) {
+            // Note: Returning 409 (Conflict) can also be seen a security/privacy vulnerability, exposing a service for account enumeration
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     private CustomerDto convertCustomerToDto (Customer customer) { // In more complex cases, we could use ModelMapper
