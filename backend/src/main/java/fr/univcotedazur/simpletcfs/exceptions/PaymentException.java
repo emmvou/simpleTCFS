@@ -2,7 +2,7 @@ package fr.univcotedazur.simpletcfs.exceptions;
 
 import java.io.Serializable;
 
-public class PaymentException extends Exception implements Serializable {
+public class PaymentException extends Exception {
 
         private String name;
         private double amount;

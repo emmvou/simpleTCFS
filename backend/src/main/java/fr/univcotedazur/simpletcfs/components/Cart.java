@@ -27,6 +27,7 @@ public class Cart implements CartModifier, CartProcessor {
 
     @Override
     public final boolean remove(Customer c, Item item) {
+        // MVP implementation: we should remove the entry if O
         return add(c, new Item(item.getCookie(), -item.getQuantity()));
     }
 

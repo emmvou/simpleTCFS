@@ -1,9 +1,7 @@
 package fr.univcotedazur.simpletcfs.controllers;
 
-import fr.univcotedazur.simpletcfs.CatalogExplorator;
 import fr.univcotedazur.simpletcfs.CustomerRegistration;
-import fr.univcotedazur.simpletcfs.controllers.dto.CustomerDto;
-import fr.univcotedazur.simpletcfs.entities.Cookies;
+import fr.univcotedazur.simpletcfs.controllers.dto.CustomerDTO;
 import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.exceptions.AlreadyExistingCustomerException;
 
@@ -11,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,7 +22,7 @@ public class CustomerCareController {
     private CustomerRegistration registry;
 
     @PostMapping(path = "register", consumes = APPLICATION_JSON_VALUE) // path is a REST CONTROLLER NAME
-    public ResponseEntity<CustomerDto> register(@RequestBody CustomerDto cusdto)  {
+    public ResponseEntity<CustomerDTO> register(@RequestBody CustomerDTO cusdto)  {
         // Note that there is no validation at all on the CustomerDto mapped
         // and no validation on the customer being already
         try {
@@ -38,8 +34,8 @@ public class CustomerCareController {
         }
     }
 
-    private CustomerDto convertCustomerToDto (Customer customer) { // In more complex cases, we could use ModelMapper
-      return new CustomerDto(customer.getId(),customer.getName(), customer.getCreditCard());
+    private CustomerDTO convertCustomerToDto (Customer customer) { // In more complex cases, we could use ModelMapper
+      return new CustomerDTO(customer.getId(),customer.getName(), customer.getCreditCard());
     }
 
 }

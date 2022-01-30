@@ -2,7 +2,7 @@ package fr.univcotedazur.simpletcfs.exceptions;
 
 import java.io.Serializable;
 
-public class EmptyCartException extends Exception implements Serializable {
+public class EmptyCartException extends Exception {
 
     private String name;
 

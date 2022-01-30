@@ -2,7 +2,7 @@ package fr.univcotedazur.simpletcfs.exceptions;
 
 import java.io.Serializable;
 
-public class AlreadyExistingCustomerException extends Exception implements Serializable {
+public class AlreadyExistingCustomerException extends Exception {
 
     private String conflictingName;
 
