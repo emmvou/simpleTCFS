@@ -18,7 +18,7 @@ import java.util.Set;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(path = CustomerCareController.BASE_URI, produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+@RequestMapping(path = CustomerCareController.BASE_URI, produces = APPLICATION_JSON_VALUE)
 // referencing the same BASE_URI as Customer care to extend it hierarchically
 public class CartController {
 
@@ -57,7 +57,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
     }
 
-    @PostMapping(CART_URI)
+    @PostMapping(path = CART_URI, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> addItemToCustomerCart(@PathVariable("customerId") String customerId, @RequestBody Item it) throws CustomerIdNotFoundException {
         Customer customer = retrieveCustomer(customerId);
         if (it.getQuantity() <= 0) {
@@ -70,7 +70,7 @@ public class CartController {
         return ResponseEntity.ok(it);
     }
 
-    @PatchMapping(CART_URI)
+    @PatchMapping(path = CART_URI, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> changeItemToCustomerCart(@PathVariable("customerId") String customerId, @RequestBody Item it) throws CustomerIdNotFoundException {
         Customer customer = retrieveCustomer(customerId);
         if (it.getQuantity() >= 0) {
@@ -89,7 +89,7 @@ public class CartController {
         return ResponseEntity.ok(processor.contents(retrieveCustomer(customerId)));
     }
 
-    @PostMapping(CART_URI+"/validate")
+    @PostMapping(path = CART_URI+"/validate", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> validate(@PathVariable("customerId") String customerId) throws CustomerIdNotFoundException, EmptyCartException, PaymentException {
         return ResponseEntity.ok(processor.validate(retrieveCustomer(customerId)));
     }

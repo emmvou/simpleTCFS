@@ -18,7 +18,7 @@ public class RecipeController {
     @Autowired
     private CatalogExplorator catalogExp;
 
-    @GetMapping(path = RecipeController.BASE_URI, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = RecipeController.BASE_URI, produces = APPLICATION_JSON_VALUE)
     public Set<Cookies> listAllRecipes() {
         return catalogExp.listPreMadeRecipes();
     }
