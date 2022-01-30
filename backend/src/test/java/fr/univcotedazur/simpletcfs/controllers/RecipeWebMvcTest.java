@@ -13,6 +13,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,7 +33,8 @@ public class RecipeWebMvcTest {
         when(mockedCat.listPreMadeRecipes())
                 .thenReturn(Set.of(Cookies.CHOCOLALALA,Cookies.DARK_TEMPTATION)); // only 2 of the 3 enum values
 
-        mockMvc.perform(get(RecipeController.BASE_URI))
+        mockMvc.perform(get(RecipeController.BASE_URI)
+                        .contentType(APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$").isArray())

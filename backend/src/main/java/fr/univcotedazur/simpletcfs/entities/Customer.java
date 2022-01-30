@@ -3,9 +3,11 @@ package fr.univcotedazur.simpletcfs.entities;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class Customer implements Serializable {
 
+    private String id;
     private String name;
     private String creditCard;
     private Set<Order> orders = new HashSet<>();
@@ -16,6 +18,11 @@ public class Customer implements Serializable {
     public Customer(String n, String c) {
         this.name = n;
         this.creditCard = c;
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
