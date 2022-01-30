@@ -21,15 +21,7 @@ public class CustomerCareController {
     public static final String BASE_URI = "/customers";
 
     @Autowired
-    private CatalogExplorator catalogExp;
-
-    @Autowired
     private CustomerRegistration registry;
-
-    @GetMapping("/recipes") // path is a REST RESOURCE COLLECTION
-    public Set<Cookies> listAllRecipes() {
-        return catalogExp.listPreMadeRecipes();
-    }
 
     @PostMapping(path = "register", consumes = APPLICATION_JSON_VALUE) // path is a REST CONTROLLER NAME
     public CustomerDto register(@RequestBody CustomerDto cusdto) throws AlreadyExistingCustomerException {
