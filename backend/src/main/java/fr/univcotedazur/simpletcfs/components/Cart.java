@@ -5,6 +5,7 @@ import fr.univcotedazur.simpletcfs.CartProcessor;
 import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.entities.Item;
 import fr.univcotedazur.simpletcfs.exceptions.EmptyCartException;
+import fr.univcotedazur.simpletcfs.exceptions.NegativeQuantityException;
 import fr.univcotedazur.simpletcfs.exceptions.PaymentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,15 +21,25 @@ public class Cart implements CartModifier, CartProcessor {
     private InMemoryDatabase memory;
 
     @Override
-    public boolean add(Customer c, Item item) {
-        memory.getCarts().put(c, updateCart(c, item));
-        return true;
-    }
-
-    @Override
-    public final boolean remove(Customer c, Item item) {
-        // MVP implementation: we should remove the entry if O
-        return add(c, new Item(item.getCookie(), -item.getQuantity()));
+    public int update(Customer c, Item item) throws NegativeQuantityException {
+        int newQuantity = item.getQuantity();
+        Set<Item> items = contents(c);
+        Optional<Item> existing = items.stream().filter(e -> e.getCookie().equals(item.getCookie())).findFirst();
+        if (existing.isPresent()) {
+            newQuantity += existing.get().getQuantity();
+        }
+        if (newQuantity < 0) {
+            throw new NegativeQuantityException(c.getName(), item.getCookie(), newQuantity);
+        } else if (newQuantity >= 0) {
+            if (existing.isPresent()) {
+                items.remove(existing.get());
+            }
+            if (newQuantity > 0) {
+                items.add(new Item(item.getCookie(), newQuantity));
+            }
+        }
+        memory.getCarts().put(c, items);
+        return newQuantity;
     }
 
     @Override
@@ -55,22 +66,5 @@ public class Cart implements CartModifier, CartProcessor {
         return "896983"; // ASCII code for "YES"
     }
 
-    /**
-     * update the cart of a given customer
-     */
-    private Set<Item> updateCart(Customer c, Item item) {
-        Set<Item> items = contents(c);
-        Optional<Item> existing = items.stream().filter(e -> e.getCookie().equals(item.getCookie())).findFirst();
-        if (existing.isPresent()) {
-            items.remove(existing.get());
-            Item toAdd = new Item(item.getCookie(), item.getQuantity() + existing.get().getQuantity());
-            if (toAdd.getQuantity() > 0) {
-                items.add(toAdd);
-            }
-        } else {
-            items.add(item);
-        }
-        return items;
-    }
 
 }

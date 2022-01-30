@@ -6,6 +6,7 @@ import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.entities.Item;
 import fr.univcotedazur.simpletcfs.exceptions.CustomerIdNotFoundException;
 import fr.univcotedazur.simpletcfs.exceptions.EmptyCartException;
+import fr.univcotedazur.simpletcfs.exceptions.NegativeQuantityException;
 import fr.univcotedazur.simpletcfs.exceptions.PaymentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,15 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDTO);
     }
 
+    @ExceptionHandler({NegativeQuantityException.class})
+    public ResponseEntity<ErrorDTO> handleExceptions(NegativeQuantityException e)  {
+        ErrorDTO errorDTO = new ErrorDTO();
+        errorDTO.setError("Attempting to update the cookie quantity to a negative value");
+        errorDTO.setDetails("from Customer " + e.getName() + "with cookie " + e.getCookie() +
+                " leading to quantity " + e.getPotentialQuantity());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDTO);
+    }
+
     @ExceptionHandler({PaymentException.class})
     public ResponseEntity<ErrorDTO> handleExceptions(PaymentException e)  {
         ErrorDTO errorDTO = new ErrorDTO();
@@ -58,30 +68,9 @@ public class CartController {
     }
 
     @PostMapping(path = CART_URI, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> addItemToCustomerCart(@PathVariable("customerId") String customerId, @RequestBody Item it) throws CustomerIdNotFoundException {
-        Customer customer = retrieveCustomer(customerId);
-        if (it.getQuantity() <= 0) {
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setError("Item quantity should be positve when using POST (or use PATCH instead)");
-            errorDTO.setDetails("on Customer " + customer.getName() + " with quantity " +it.getQuantity());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDTO);
-        }
-        cart.add(customer,it);
-        return ResponseEntity.ok(it);
-    }
-
-    @PatchMapping(path = CART_URI, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> changeItemToCustomerCart(@PathVariable("customerId") String customerId, @RequestBody Item it) throws CustomerIdNotFoundException {
-        Customer customer = retrieveCustomer(customerId);
-        if (it.getQuantity() >= 0) {
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setError("Item quantity should be negative when using PATCH (or use POST instead)");
-            errorDTO.setDetails("on Customer " + customer.getName() + " with quantity " +it.getQuantity());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDTO);
-        }
-        // nothing on Cookie from Item not being in the cart
-        cart.add(customer,it);
-        return ResponseEntity.ok(it);
+    public ResponseEntity<Item> addItemToCustomerCart(@PathVariable("customerId") String customerId, @RequestBody Item it) throws CustomerIdNotFoundException, NegativeQuantityException {
+        int newQuantity = cart.update(retrieveCustomer(customerId),it);
+        return ResponseEntity.ok(new Item(it.getCookie(),newQuantity));
     }
 
     @GetMapping(CART_URI)

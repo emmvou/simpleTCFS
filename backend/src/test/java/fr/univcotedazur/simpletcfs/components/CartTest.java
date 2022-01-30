@@ -9,6 +9,7 @@ import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.entities.Item;
 import fr.univcotedazur.simpletcfs.exceptions.AlreadyExistingCustomerException;
 import fr.univcotedazur.simpletcfs.exceptions.EmptyCartException;
+import fr.univcotedazur.simpletcfs.exceptions.NegativeQuantityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,38 +56,49 @@ class CartTest {
     }
 
     @Test
-    public void addItems() {
-        cart.add(john, new Item(Cookies.CHOCOLALALA, 2));
-        cart.add(john, new Item(Cookies.DARK_TEMPTATION, 3));
+    public void addItems() throws NegativeQuantityException {
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 2));
+        cart.update(john, new Item(Cookies.DARK_TEMPTATION, 3));
         Set<Item> oracle = Set.of(new Item(Cookies.CHOCOLALALA, 2), new Item(Cookies.DARK_TEMPTATION, 3));
         assertEquals(oracle, processor.contents(john));
     }
 
     @Test
-    public void removeItems() {
-        cart.add(john, new Item(Cookies.CHOCOLALALA, 2));
-        cart.remove(john, new Item(Cookies.CHOCOLALALA, 2));
+    public void removeItems() throws NegativeQuantityException {
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 2));
+        cart.update(john, new Item(Cookies.CHOCOLALALA, -2));
         assertEquals(0,processor.contents(john).size());
-        cart.add(john, new Item(Cookies.CHOCOLALALA, 6));
-        cart.remove(john, new Item(Cookies.CHOCOLALALA, 5));
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 6));
+        cart.update(john, new Item(Cookies.CHOCOLALALA, -5));
         Set<Item> oracle = Set.of(new Item(Cookies.CHOCOLALALA, 1));
         assertEquals(oracle, processor.contents(john));
     }
 
     @Test
-    public void modifyQuantities() {
-        cart.add(john, new Item(Cookies.CHOCOLALALA, 2));
-        cart.add(john, new Item(Cookies.DARK_TEMPTATION, 3));
-        cart.add(john, new Item(Cookies.CHOCOLALALA, 3));
+    public void removeTooMuchItems() throws NegativeQuantityException {
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 2));
+        cart.update(john, new Item(Cookies.DARK_TEMPTATION, 3));
+        Assertions.assertThrows( NegativeQuantityException.class, () -> {
+            cart.update(john, new Item(Cookies.CHOCOLALALA, -3));
+        });
+        Set<Item> oracle = Set.of(new Item(Cookies.CHOCOLALALA, 2), new Item(Cookies.DARK_TEMPTATION, 3));
+        assertEquals(oracle, processor.contents(john));
+    }
+
+    @Test
+    public void modifyQuantities() throws NegativeQuantityException {
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 2));
+        cart.update(john, new Item(Cookies.DARK_TEMPTATION, 3));
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 3));
         Set<Item> oracle = Set.of(new Item(Cookies.CHOCOLALALA, 5), new Item(Cookies.DARK_TEMPTATION, 3));
         assertEquals(oracle, processor.contents(john));
     }
 
     @Test
-    public void getTheRightPrice() {
-        cart.add(john, new Item(Cookies.CHOCOLALALA, 2));
-        cart.add(john, new Item(Cookies.DARK_TEMPTATION, 3));
-        cart.add(john, new Item(Cookies.CHOCOLALALA, 3));
+    public void getTheRightPrice() throws NegativeQuantityException {
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 2));
+        cart.update(john, new Item(Cookies.DARK_TEMPTATION, 3));
+        cart.update(john, new Item(Cookies.CHOCOLALALA, 3));
         assertEquals(12.20, processor.price(john), 0.01);
     }
 
