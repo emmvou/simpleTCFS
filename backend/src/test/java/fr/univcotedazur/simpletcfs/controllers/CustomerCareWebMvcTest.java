@@ -1,6 +1,7 @@
 package fr.univcotedazur.simpletcfs.controllers;
 
 import fr.univcotedazur.simpletcfs.CatalogExplorator;
+import fr.univcotedazur.simpletcfs.CustomerRegistration;
 import fr.univcotedazur.simpletcfs.entities.Cookies;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,15 @@ public class CustomerCareWebMvcTest {
     @MockBean
     private CatalogExplorator mockedCat; // the real Catalog component is not created, we have to mock it
 
+    @MockBean
+    private CustomerRegistration mockedReg; // idem for CustomerRegistry component
+
     @Test
     void recipesFullStackTest() throws Exception {
         when(mockedCat.listPreMadeRecipes())
                 .thenReturn(Set.of(Cookies.CHOCOLALALA,Cookies.DARK_TEMPTATION)); // only 2 of the 3 enum values
 
-        mockMvc.perform(get("/customer/recipes"))
+        mockMvc.perform(get(CustomerCareController.BASE_URI+"/recipes"))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$").isArray())

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
-public class InMemoryDatabase { // In Memory maps of all entities. Should be removed when moving to persistence
+public class InMemoryDatabase { // Quick and dirty InMemory maps of all entities. Should be removed when moving to persistence
 
     private Map<Customer, Set<Item>> carts;
     public Map<Customer, Set<Item>> getCarts() { return carts; }

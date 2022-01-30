@@ -45,9 +45,10 @@ class CustomerRegistryTest {
 
     @Test
     public void registerCustomer() throws Exception {
-        registry.register(name, creditCard);
+        Customer returned = registry.register(name, creditCard);
         Optional<Customer> customer = finder.findByName(name);
         assertTrue(customer.isPresent());
+        assertEquals(customer.get(),returned);
         Customer john = customer.get();
         assertEquals(name, john.getName());
         assertEquals(creditCard, john.getCreditCard());

@@ -29,7 +29,7 @@ public class recipeCommandsTest {
     public void recipesSetTest() {
 
         server
-                .expect(requestTo("/customer/recipes"))
+                .expect(requestTo(RecipeCommands.CMD_URI))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("[\"CHOCOLALALA\",\"DARK_TEMPTATION\",\"SOO_CHOCOLATE\"]", MediaType.APPLICATION_JSON));
 

@@ -16,11 +16,13 @@ public class CustomerRegistry implements CustomerRegistration, CustomerFinder {
     private InMemoryDatabase memory;
 
     @Override
-    public void register(String name, String creditCard)
+    public Customer register(String name, String creditCard)
             throws AlreadyExistingCustomerException {
         if(findByName(name).isPresent())
             throw new AlreadyExistingCustomerException(name);
-        memory.getCustomers().put(name, new Customer(name, creditCard));
+        Customer newcustomer = new Customer(name, creditCard);
+        memory.getCustomers().put(name, newcustomer);
+        return newcustomer;
     }
 
     @Override

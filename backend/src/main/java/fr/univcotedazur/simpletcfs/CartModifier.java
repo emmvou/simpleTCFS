@@ -12,8 +12,4 @@ public interface CartModifier {
 
     boolean remove(Customer c, Item item);
 
-    Set<Item> contents(Customer c);
-
-    String validate(Customer c) throws PaymentException;
-
 }

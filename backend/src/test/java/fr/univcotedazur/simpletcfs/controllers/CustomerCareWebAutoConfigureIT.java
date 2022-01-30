@@ -24,7 +24,7 @@ public class CustomerCareWebAutoConfigureIT {
 
     @Test
     void recipesFullStackTest() throws Exception {
-        mockMvc.perform(get("/customer/recipes"))
+        mockMvc.perform(get(CustomerCareController.BASE_URI+"/recipes"))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$").isArray())

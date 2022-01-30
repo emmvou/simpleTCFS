@@ -13,7 +13,7 @@ import java.util.Set;
 @ShellComponent
 public class RecipeCommands {
 
-    private final String CMD_URI = "/customer/recipes";
+    public static final String CMD_URI = "/customers/recipes";
 
     @Autowired
     RestTemplate restTemplate;
