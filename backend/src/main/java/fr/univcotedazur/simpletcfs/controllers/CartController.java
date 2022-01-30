@@ -68,7 +68,7 @@ public class CartController {
     }
 
     @PostMapping(path = CART_URI, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Item> addItemToCustomerCart(@PathVariable("customerId") String customerId, @RequestBody Item it) throws CustomerIdNotFoundException, NegativeQuantityException {
+    public ResponseEntity<Item> updateCustomerCart(@PathVariable("customerId") String customerId, @RequestBody Item it) throws CustomerIdNotFoundException, NegativeQuantityException {
         int newQuantity = cart.update(retrieveCustomer(customerId),it);
         return ResponseEntity.ok(new Item(it.getCookie(),newQuantity));
     }
