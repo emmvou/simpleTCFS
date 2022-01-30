@@ -89,7 +89,7 @@ public class CartController {
         return ResponseEntity.ok(processor.contents(retrieveCustomer(customerId)));
     }
 
-    @PostMapping(path = CART_URI+"/validate", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(path = CART_URI+"/validate")
     public ResponseEntity<String> validate(@PathVariable("customerId") String customerId) throws CustomerIdNotFoundException, EmptyCartException, PaymentException {
         return ResponseEntity.ok(processor.validate(retrieveCustomer(customerId)));
     }
