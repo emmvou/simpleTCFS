@@ -1,6 +1,6 @@
 package fr.univcotedazur.simpletcfs.cli.commands;
 
-import fr.univcotedazur.simpletcfs.cli.model.Cookies;
+import fr.univcotedazur.simpletcfs.cli.model.CookieEnum;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +29,11 @@ public class recipeCommandsTest {
     public void recipesSetTest() {
 
         server
-                .expect(requestTo(RecipeCommands.CMD_URI))
+                .expect(requestTo("/recipes"))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("[\"CHOCOLALALA\",\"DARK_TEMPTATION\",\"SOO_CHOCOLATE\"]", MediaType.APPLICATION_JSON));
 
-        assertEquals(EnumSet.allOf(Cookies.class), client.recipes());
+        assertEquals(EnumSet.allOf(CookieEnum.class), client.recipes());
     }
 
 }
