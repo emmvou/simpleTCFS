@@ -2,8 +2,10 @@ package fr.univcotedazur.simpletcfs.components;
 
 import fr.univcotedazur.simpletcfs.CartModifier;
 import fr.univcotedazur.simpletcfs.CartProcessor;
+import fr.univcotedazur.simpletcfs.Payment;
 import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.entities.Item;
+import fr.univcotedazur.simpletcfs.entities.Order;
 import fr.univcotedazur.simpletcfs.exceptions.EmptyCartException;
 import fr.univcotedazur.simpletcfs.exceptions.NegativeQuantityException;
 import fr.univcotedazur.simpletcfs.exceptions.PaymentException;
@@ -16,6 +18,9 @@ import java.util.Set;
 
 @Component
 public class Cart implements CartModifier, CartProcessor {
+
+    @Autowired
+    private Payment cashier;
 
     @Autowired
     private InMemoryDatabase memory;
@@ -57,13 +62,12 @@ public class Cart implements CartModifier, CartProcessor {
     }
 
     @Override
-    public String validate(Customer c) throws PaymentException, EmptyCartException {
+    public Order validate(Customer c) throws PaymentException, EmptyCartException {
         if (contents(c).isEmpty())
             throw new EmptyCartException(c.getName());
-        // should ask a cashier object (proxy to BANK API)
-        // return cashier.payOrder(c, contents(c));
+        Order res = cashier.payOrder(c, contents(c));
         contents(c).clear();
-        return "896983"; // ASCII code for "YES"
+        return res;
     }
 
 

@@ -1,14 +1,19 @@
 package fr.univcotedazur.simpletcfs.controllers;
 
 import fr.univcotedazur.simpletcfs.CustomerRegistration;
+import fr.univcotedazur.simpletcfs.Tracker;
 import fr.univcotedazur.simpletcfs.controllers.dto.CustomerDTO;
 import fr.univcotedazur.simpletcfs.entities.Customer;
+import fr.univcotedazur.simpletcfs.entities.Item;
 import fr.univcotedazur.simpletcfs.exceptions.AlreadyExistingCustomerException;
 
+import fr.univcotedazur.simpletcfs.exceptions.CustomerIdNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

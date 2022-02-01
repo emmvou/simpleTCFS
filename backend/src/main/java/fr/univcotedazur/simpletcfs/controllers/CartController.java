@@ -4,6 +4,7 @@ import fr.univcotedazur.simpletcfs.*;
 import fr.univcotedazur.simpletcfs.controllers.dto.ErrorDTO;
 import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.entities.Item;
+import fr.univcotedazur.simpletcfs.entities.Order;
 import fr.univcotedazur.simpletcfs.exceptions.CustomerIdNotFoundException;
 import fr.univcotedazur.simpletcfs.exceptions.EmptyCartException;
 import fr.univcotedazur.simpletcfs.exceptions.NegativeQuantityException;
@@ -80,7 +81,9 @@ public class CartController {
 
     @PostMapping(path = CART_URI+"/validate")
     public ResponseEntity<String> validate(@PathVariable("customerId") String customerId) throws CustomerIdNotFoundException, EmptyCartException, PaymentException {
-        return ResponseEntity.ok(processor.validate(retrieveCustomer(customerId)));
+        Order order = processor.validate(retrieveCustomer(customerId));
+        return ResponseEntity.ok().body("Order " + order.getId() + " (amount " + order.getPrice() +
+                ") is validated");
     }
 
     private Customer retrieveCustomer(String customerId) throws CustomerIdNotFoundException {
