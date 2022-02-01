@@ -1,0 +1,17 @@
+recipes
+register kadoc 123456
+show-cart kadoc
+add-to-cart kadoc CHOCOLALALA 12
+add-to-cart kadoc SOO_CHOCOLATE 3
+show-cart kadoc
+remove-from-cart kadoc SOO_CHOCOLATE 1
+show-cart kadoc
+// next remove triggers an error
+remove-from-cart kadoc SOO_CHOCOLATE 3
+show-cart kadoc
+validate-cart kadoc
+show-cart kadoc
+// validate empty car triggers an error
+validate-cart kadoc
+// register kadoc twice triggers an error
+register kadoc 121212
