@@ -28,10 +28,20 @@ public class CartCommands {
         return restTemplate.getForObject(getUriForCustomer(name),Set.class);
     }
 
-    @ShellMethod("Add cookie to cart of customer (addtocart CUSTOMER_NAME COOKIE_NAME QUANTITY)")
+    @ShellMethod("Add cookie to cart of customer (add-to-cart CUSTOMER_NAME COOKIE_NAME QUANTITY)")
     public CartElement addToCart(String name, CookieEnum cookie, int quantity) {
-        // Spring-shell is catching exception (could be the case if name is not from a valid customer
+        // Spring-shell is catching exception (could be the case if name is not from a valid customer)
         return restTemplate.postForObject(getUriForCustomer(name),new CartElement(cookie,quantity),CartElement.class);
+    }
+
+    @ShellMethod("Remove cookie from cart of customer (remove-from-cart CUSTOMER_NAME COOKIE_NAME QUANTITY)")
+    public CartElement removeFromCart(String name, CookieEnum cookie, int quantity) {
+        return addToCart(name,cookie,-quantity);
+    }
+
+    @ShellMethod("Validate cart of customer (validate CUSTOMER_NAME)")
+    public String validateCart(String name) {
+        return restTemplate.postForObject(getUriForCustomer(name)+"/validate",null,String.class);
     }
 
     private String getUriForCustomer (String name) {
