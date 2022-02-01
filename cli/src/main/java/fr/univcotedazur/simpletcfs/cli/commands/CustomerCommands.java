@@ -1,6 +1,6 @@
 package fr.univcotedazur.simpletcfs.cli.commands;
 
-import fr.univcotedazur.simpletcfs.cli.CliMemory;
+import fr.univcotedazur.simpletcfs.cli.CliContext;
 import fr.univcotedazur.simpletcfs.cli.model.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
@@ -16,18 +16,18 @@ public class CustomerCommands {
     RestTemplate restTemplate;
 
     @Autowired
-    private CliMemory cliMemory;
+    private CliContext cliContext;
 
     @ShellMethod("Register a customer in the CoD backend (register CUSTOMER_NAME CREDIT_CARD_NUMBER)")
     public Customer register(String name, String creditCard) {
         Customer res = restTemplate.postForObject(BASE_URI+"/register",new Customer(name,creditCard),Customer.class);
-        cliMemory.getCustomers().put(res.getName(),res);
+        cliContext.getCustomers().put(res.getName(),res);
         return res;
     }
 
     @ShellMethod("List all customers")
     public String customers() {
-        return cliMemory.getCustomers().toString();
+        return cliContext.getCustomers().toString();
     }
 
 }

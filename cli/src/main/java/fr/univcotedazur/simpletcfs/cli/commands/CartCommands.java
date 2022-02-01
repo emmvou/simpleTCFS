@@ -1,9 +1,8 @@
 package fr.univcotedazur.simpletcfs.cli.commands;
 
-import fr.univcotedazur.simpletcfs.cli.CliMemory;
+import fr.univcotedazur.simpletcfs.cli.CliContext;
 import fr.univcotedazur.simpletcfs.cli.model.CartElement;
 import fr.univcotedazur.simpletcfs.cli.model.CookieEnum;
-import fr.univcotedazur.simpletcfs.cli.model.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -20,7 +19,7 @@ public class CartCommands {
     RestTemplate restTemplate;
 
     @Autowired
-    private CliMemory cliMemory;
+    private CliContext cliContext;
 
     @ShellMethod("Show cart content of customer (showcart CUSTOMER_NAME)")
     public Set<CartElement> showCart(String name) {
@@ -45,7 +44,7 @@ public class CartCommands {
     }
 
     private String getUriForCustomer (String name) {
-        return BASE_URI+"/"+cliMemory.getCustomers().get(name).getId()+"/cart";
+        return BASE_URI+"/"+ cliContext.getCustomers().get(name).getId()+"/cart";
     }
 
 }
