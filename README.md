@@ -19,7 +19,7 @@ _The Cookie Factory_ (TCF) is a major bakery brand in the USA. The _Cookie on De
 
 ## Chapters
 
-  1. Architecture
+  1. [Architecture](chapters/Architecture.md)
   2. Business Components
   3. Controllers
   4. Testing
