@@ -5,8 +5,6 @@
   * Reviewer: Anne-Marie Déry
   * some code and doc borrowed from the original Cookie Factory by Sebastiem Mosser, last fork being [https://github.com/collet/4A_ISA_TheCookieFactory](https://github.com/collet/4A_ISA_TheCookieFactory)
 
-Simple mono-repo TCF in Spring
-
 This case study is used to illustrate the different technologies involved in the _Introduction to Software Architecture_  course given at Polytech Nice - Sophia Antipolis at the graduate level. This demonstration code requires the following software to run properly:
 
   * Build & Spring environment configuration: Maven >=3.8.1
