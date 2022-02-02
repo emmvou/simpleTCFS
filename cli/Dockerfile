@@ -11,5 +11,7 @@ COPY ${JAR_FILE} app.jar
 
 COPY wait-for-it.sh /wait-for-it.sh
 
+RUN chmod +x /wait-for-it.sh
+
 # Starting the service (shell form of ENTRYPOINT used for substitution)
 ENTRYPOINT java -jar /app.jar --tcf.host.baseurl=$SERVER_URL

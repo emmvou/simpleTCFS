@@ -6,6 +6,11 @@ services:
    tcf-server:
     image: pcollet/tcf-spring-backend
     container_name: server
+    environment:
+      - BANK_WITH_PORT=bank-system:9090
+    entrypoint: "bash -c '/wait-for-it.sh $${BANK_WITH_PORT} -- java -jar /app.jar --bank.host.baseurl=http://$${BANK_WITH_PORT}'"
+    depends_on:
+      - bank-system
 
   # A simple java CLI
    tcf-cli:
@@ -18,3 +23,8 @@ services:
       - tcf-server
     stdin_open: true
     tty: true
+
+  # An external bank service in C#
+   bank-system:
+    image: pcollet/tcf-bank-service
+    container_name: bank
