@@ -91,3 +91,31 @@ after few seconds:
 enables to use the containerized cli (see docker-compose.yml and the devops lecture for more information).
 
 Note that you cannot run the two docker images separately and expect them to communicate with each other, each one being isolated in its own container. That's one of the main purpose of `docker-compose` to enable composition of container, with by default a shared network.
+
+The docker-compose file contains a volume declaration (see the cli section) to mount the `demo.txt` file which can be directly used from the cli as below to iterate through a complete scenario and check that verify is running fine :
+
+```
+shell:>script --file demo.txt
+CHOCOLALALA
+DARK_TEMPTATION
+SOO_CHOCOLATE
+[...]
+```
+
+Some actions will display intended errors :
+
+```
+403 : [{"error":"Attempting to update the cookie quantity to a negative value","details":"from Customer kadocwith cookie SOO_CHOCOLATE leading to quantity -1"}]
+403 : [{"error":"Cart is empty","details":"from Customer kadoc"}]
+409 : [no body]
+400 : [{"error":"Payment was rejected","details":"from Customer tatie for amount 1.3"}]
+```
+
+### Troubleshoot
+
+### dotNet project : compile.sh
+
+On a bare windows setup, `compile.sh` cannot be used. You can install Cygwin or directly use the `csc` command to build the project (see `compile.sh`).
+### "/usr/bin/env: 'bash\r': No such file or directory"
+
+If during the docker-compose start up you encounter this error `/usr/bin/env: 'bash\r': No such file or directory` with the back or the cli container, you need to rebuild the corresponding image with the `wait-for-it.sh` configured to use LF end of line sequence instead CRLF. This can occur if you open the file with an editor like VSCode configured to use CRLF.

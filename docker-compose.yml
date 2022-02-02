@@ -1,9 +1,8 @@
-version: '3'
+version: "3"
 
 services:
-
   # The Cookie Factory backend in SpringBoot
-   tcf-server:
+  tcf-server:
     image: pcollet/tcf-spring-backend
     container_name: server
     environment:
@@ -13,7 +12,7 @@ services:
       - bank-system
 
   # A simple java CLI
-   tcf-cli:
+  tcf-cli:
     image: pcollet/tcf-spring-cli
     container_name: cli
     environment:
@@ -21,10 +20,12 @@ services:
     entrypoint: "bash -c '/wait-for-it.sh $${SERVER_WITH_PORT} -- java -jar /app.jar --tcf.host.baseurl=http://$${SERVER_WITH_PORT}'"
     depends_on:
       - tcf-server
+    volumes:
+      - ./cli/demo.txt:/demo.txt
     stdin_open: true
     tty: true
 
   # An external bank service in C#
-   bank-system:
+  bank-system:
     image: pcollet/tcf-bank-service
     container_name: bank
