@@ -24,8 +24,8 @@ jobs:
           java-version: '17'
       - name: Set up Maven 3.8.4
         uses: stCarolas/setup-maven@v4.2
-          with:
-            maven-version: 3.8.4
+        with:
+          maven-version: 3.8.4
       - name: Build the backend
         working-directory: ./backend
         run: mvn clean install
