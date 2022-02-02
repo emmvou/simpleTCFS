@@ -44,3 +44,6 @@ build/
 
 ### MacOS ###
 **/.DS_Store
+
+### Mono build ###
+**/*.exe
