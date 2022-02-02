@@ -10,6 +10,7 @@ import fr.univcotedazur.simpletcfs.exceptions.PaymentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Component
@@ -27,7 +28,7 @@ public class Cashier implements Payment {
     @Override
     public Order payOrder(Customer customer, Set<Item> items) throws PaymentException {
 
-        Order order = new Order(customer, items);
+        Order order = new Order(customer, new HashSet<>(items));
         double price = order.getPrice();
 
         boolean status = false;

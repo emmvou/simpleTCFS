@@ -1,5 +1,5 @@
 recipes
-register kadoc 123456
+register kadoc 1896983
 show-cart kadoc
 add-to-cart kadoc CHOCOLALALA 12
 add-to-cart kadoc SOO_CHOCOLATE 3
@@ -15,3 +15,8 @@ show-cart kadoc
 validate-cart kadoc
 // register kadoc twice triggers an error
 register kadoc 121212
+// tatie cannot pay
+register tatie 121212
+add-to-cart tatie CHOCOLALALA 1
+show-cart tatie
+validate-cart tatie

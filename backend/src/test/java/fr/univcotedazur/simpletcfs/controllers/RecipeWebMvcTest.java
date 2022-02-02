@@ -4,6 +4,7 @@ import fr.univcotedazur.simpletcfs.CatalogExplorator;
 import fr.univcotedazur.simpletcfs.entities.Cookies;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RecipeController.class) // start only the specified MVC front controller and no other Spring components nor the server -> Unit test of the controller
+@AutoConfigureWebClient // Added to avoir error on RestTemplateBuilder missing
 public class RecipeWebMvcTest {
 
     @Autowired
