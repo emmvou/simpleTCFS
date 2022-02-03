@@ -13,11 +13,11 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Install java 17 (Temurin)
+      - name: Install java 11 (Temurin)
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
       - name: Set up Maven 3.8.4
         uses: stCarolas/setup-maven@v4.2
         with:
