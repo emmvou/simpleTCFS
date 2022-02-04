@@ -1,0 +1,23 @@
+name: FeaturesBack
+
+on:
+  push:
+    branches:
+      - feature/**
+    paths:
+      - backend/**
+
+jobs:
+  SetUp:
+    - uses: ./.github/actions/workflows/CommonTask
+  UnitTests:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: SetUp
+      - name: Set up Maven 3.8.4
+        uses: stCarolas/setup-maven@v4.2
+        with:
+          maven-version: 3.8.4
+      - name: Test the backend
+        working-directory: ./backend
+        run: mvn clean test
