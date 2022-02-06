@@ -11,7 +11,7 @@ jobs:
   UnitTests:
     runs-on: ubuntu-20.04
     steps:
-      - uses: ./.github/workflows/github-action-common-tasks
+      - uses: ./.github/actions/common-tasks
       - name: Set up Maven 3.8.4
         uses: stCarolas/setup-maven@v4.2
         with:
