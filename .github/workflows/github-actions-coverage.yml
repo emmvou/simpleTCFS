@@ -9,12 +9,10 @@ on:
       - cli/**
 
 jobs:
-  SetUp:
-    - uses: ./.github/actions/workflows/CommonTask
   Backend:
     runs-on: ubuntu-20.04
     steps:
-      - uses: SetUp
+      - uses: ./.github/workflows/github-action-common-tasks
       - name: Generate the backend coverage badge
         uses: cicirello/jacoco-badge-generator@v2
         with:
