@@ -12,7 +12,9 @@ jobs:
   Backend:
     runs-on: ubuntu-20.04
     steps:
-      - uses: ./.github/workflows/github-action-common-tasks
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - uses: ./.github/actions/common-tasks
       - name: Generate the backend coverage badge
         uses: cicirello/jacoco-badge-generator@v2
         with:
