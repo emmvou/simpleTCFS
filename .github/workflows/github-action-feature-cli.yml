@@ -8,12 +8,10 @@ on:
       - cli/**
 
 jobs:
-  SetUp:
-    - uses: ./.github/actions/workflows/CommonTask
   UnitTests:
     runs-on: ubuntu-20.04
     steps:
-      - uses: SetUp
+      - uses: ./.github/actions/workflows/github-action-feature-cli
       - name: Set up Maven 3.8.4
         uses: stCarolas/setup-maven@v4.2
         with:
