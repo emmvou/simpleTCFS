@@ -1,10 +1,10 @@
 name: CommonTask
 
 runs:
-  runs-on: ubuntu-20.04
   using: "composite"
   steps:
     - name: Install java 11 (Temurin)
+      runs-on: ubuntu-20.04
       uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
