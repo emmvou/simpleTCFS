@@ -20,8 +20,8 @@ The system is defined as layers:
 
 To deliver the expected features, the coD system defines the following interfaces:
 
-  * `CartModifier`: operations to modify a given customer's cart, like adding or removing cookies, 
-  * `CartProcessor`: operation for retrieving the contents of the cart and validating the cart to process the associated order;
+  * `CartModifier`: operation to modify a given customer's cart, by updating the number of cookies in it, 
+  * `CartProcessor`: operations for retrieving the contents of the cart and validating the cart to process the associated order;
   * `CustomerFinder`: a _finder_ interface to retrieve a customer based on her identifier (here simplified to her name);
   * `CustomerRegistration`: operations to handle customer's registration (users profile, ...)
   * `CatalogueExploration`: operations to retrieve recipes available for purchase in the CoD;
