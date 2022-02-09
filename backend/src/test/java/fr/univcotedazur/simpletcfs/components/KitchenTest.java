@@ -4,22 +4,17 @@ import fr.univcotedazur.simpletcfs.CustomerRegistration;
 import fr.univcotedazur.simpletcfs.OrderProcessing;
 import fr.univcotedazur.simpletcfs.Tracker;
 import fr.univcotedazur.simpletcfs.entities.*;
-import fr.univcotedazur.simpletcfs.exceptions.AlreadyExistingCustomerException;
-import fr.univcotedazur.simpletcfs.exceptions.UnknownOrderId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
 class KitchenTest {
 
     @Autowired
