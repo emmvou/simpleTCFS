@@ -52,8 +52,8 @@ However, when you implement integration tests, you usually want to:
 
 The *failsafe* plugin is made for that! From the [FAQ](https://maven.apache.org/surefire/maven-failsafe-plugin/faq.html#surefire-v-failsafe):
 
-   * [maven-surefire-plugin](http://maven.apache.org/plugins/maven-surefire-plugin) is designed for running unit tests and if any of the tests fail then it will fail the build immediately.
-   * [maven-failsafe-plugin](http://maven.apache.org/plugins/maven-failsafe-plugin) is designed for running integration tests, and decouples failing the build if there are test failures from actually running the tests.
+   * *maven-surefire-plugin* is designed for running unit tests and if any of the tests fail then it will fail the build immediately.
+   * *maven-failsafe-plugin* is designed for running integration tests, and decouples failing the build if there are test failures from actually running the tests.
 
 First, we have to include the last version of both plugins (note that in the code, these versions are set through properties, not to be duplicated). We use version *3.0.0-M5` as it is the last stable version that handles correctly SpringBoot, Cucumber 7.X with the new complete integration with JUnit 5 (see [BDD in Spring](#bdd-in-spring) below).
 
@@ -405,18 +405,11 @@ In Java, the Cucumber framework relies on JUnit, and some specific setup is also
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "fr.univcotedazur.simpletcfs.features")
 public class RunCucumberIT {
 }
-
-
-
-@RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources")
-public class CucumberIntegrationTest {
-}
 ```
 
 This class is only a hook with some configuration options:
 
-   * It is named `RunCucumberIT` so that it will be detected by the *failsafe* plugin as an integration test and thus only run within a `mvn verify` command.
+   * It is named `RunCucumberIT` so that it will be detected by the *failsafe* plugin as an integration test (i.e. the class name ends with `IT`) and thus only run within a `mvn verify` command.
    * It uses the `@Suite` annotation from the JUnit 5 platform engine, which is the proper way to link Cucumber 7.X and JUnit 5. Take care not to use anymore the old ways, such as `@RunWith(Cucumber.class` that was using JUnit 4 or `@Cucumber` that was supported in Cucumber 6.
 
 
