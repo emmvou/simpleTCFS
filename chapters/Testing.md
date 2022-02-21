@@ -42,6 +42,71 @@ class CatalogTest {
 ```
 
 
+## Running different types of test with maven
+
+By default, maven use its *surefire* plugin to run tests. This plugin is especially built for running unit tests, as it will diretly fail if any test fails. This is a good property for preventing the build to be made (the goal *package* will typically fail).
+However, when you implement integration tests, you usually want to:
+
+   * isolate them from unit tests (e.g. to run them only on a CI server),
+   * use built packages (that have passed unit tests) to put some of them together to setup a context for some integration tests, and cleaning up this context if some tests fail.
+
+The *failsafe* plugin is made for that! From the [FAQ](https://maven.apache.org/surefire/maven-failsafe-plugin/faq.html#surefire-v-failsafe):
+
+   * [maven-surefire-plugin](http://maven.apache.org/plugins/maven-surefire-plugin) is designed for running unit tests and if any of the tests fail then it will fail the build immediately.
+   * [maven-failsafe-plugin](http://maven.apache.org/plugins/maven-failsafe-plugin) is designed for running integration tests, and decouples failing the build if there are test failures from actually running the tests.
+
+First, we have to include the last version of both plugins (note that in the code, these versions are set through properties, not to be duplicated). We use version *3.0.0-M5` as it is the last stable version that handles correctly SpringBoot, Cucumber 7.X with the new complete integration with JUnit 5 (see [BDD in Spring](#bdd-in-spring) below).
+
+```xml
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M5</version>
+...
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+```
+
+It must be noted that *surefire* will, by default, find tests with the following names and run them during the `test` phase (i.e. just before `package`):  
+   
+   * `"**/Test*.java"` - includes all of its subdirectories and all Java filenames that start with "Test".
+   * `"**/*Test.java"` - includes all of its subdirectories and all Java filenames that end with "Test".
+   * `"**/*Tests.java"` - includes all of its subdirectories and all Java filenames that end with "Tests".
+   * `"**/*TestCase.java"` - includes all of its subdirectories and all Java filenames that end with "TestCase".`
+
+
+On its side, *failsafe* is integrated in the `verify`phase, and will run integration tests that follow, by default, the following patterns:
+
+   * `"**/IT*.java"` - includes all of its subdirectories and all Java filenames that start with "IT".
+   * `"**/*IT.java"` - includes all of its subdirectories and all Java filenames that end with "IT".
+   * `"**/*ITCase.java"` - includes all of its subdirectories and all Java filenames that end with "ITCase".
+
+With this setup, a classic packaging command:
+
+    mvn clean package
+
+will run unit tests, while a `verify` command:
+
+    mvn clean verify
+    
+will first run unit tests through *surefire*, and then the integration tests through *failsafe*. In our case, it will run a test of the full backend through a controller and a set of Cucumber tests (see below for details).
+
+If one wants to separate integration tests (e.g., in a CI) the following command will only run them:
+
+    mvn clean verify '-Dtest=!*' -DfailIfNoTests=false
+
 ## Testing the `Cart` Component
 
 Let's now focus on the implementation of a more complex component, dedicated to handle customer's carts. 
@@ -192,6 +257,169 @@ Consequently, it enables one to write a test setup with Mockito directives (e.g.
     }
 ```
 
+## BDD in Spring
+
+Behavioral-Driven Development (BDD) bridges the gap between scenarios, which could be very close, in the Gherkin syntax, to acceptance criteria, and tests. This enables to mechanize tests that follows use cases or acceptance criteria from a user story.
+
+We consider here the use case "Adding cookies to a cart" that is more or less the one used for [testing the Cart Component](#testing-the-cart-component):
+
+  1. Considering a customer that exists in the system;
+  2. The customer add some cookies to her cart
+  3. The cart is updated (and remove duplicates, if any).
+
+### Setting-up Cucumber
+
+The _de facto_ standard to implements BDD in the Java ecosystem is the [Cucumber](https://cucumber.io/) framework. It bounds a requirements engineering language ([Gherkin](https://cucumber.io/docs/gherkin/)] to JUnit tests, using plain regular expressions.
+
+For TCF, we need to use a version of Cucumber that is Spring-compliant, as the code to test lives inside an application container. Hopefully, the last version of Cucumber seems to be more and more well supported both by SpringBoot and IntelliJ (for generating steps, double-checking that gherkin phrases are covered by steps, etc.).
+
+We just have to add the following dependencies in the POM file (versions are using properties in the code):
+
+```xml
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.2.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>7.2.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>7.2.3</version>
+            <scope>test</scope>
+        </dependency>
+```
+
+Note that we are not using any more the *cucumber-junit* artifact, but the *cucumber-junit-platform-engine* with the *junit-platform-suite* that enable a full support for JUnit 5 and its `@Suite@` annotation for the setup (see below).
+
+### Modelling use cases or scenarios as Features
+
+The Use case _Adding cookies to a cart_ is modelled as a `Feature`, and described using ([Gherkin](https://cucumber.io/docs/gherkin/)], a requirement language based on the _Given, When, Then_ paradigm. We create a file named `OrderingCookies.feature`, where we describe an instance of this very scenario:
+
+```gherkin
+Feature: Ordering Cookies
+
+  This feature support the way a Customer can order cookies through the TCF system
+
+  Background:
+    Given a customer named "Maurice" with credit card "1234896983"
+    
+  Scenario: Modifying the number of cookies inside an order
+    When "Maurice" orders 2 x "CHOCOLALALA"
+    And "Maurice" orders 3 x "DARK_TEMPTATION"
+    And "Maurice" orders 3 x "CHOCOLALALA"
+    And "Maurice" asks for his cart contents
+    Then there are 2 items inside the cart
+    And the cart contains the following item: 5 x "CHOCOLALALA"
+    And the cart contains the following item: 3 x "DARK_TEMPTATION"
+```
+
+A `Scenario` contains several steps. A `Given` one represents the context of the scenario, a `When` one the interaction with the SuT (_system under test_) and a `Then` is an assertion expected from the SuT. The `Background` section is a sub-scenario that is common to all the others, and executed before their contents.
+
+To implement the behaviour of each steps, we can rely on a testing frameork, so  JUnit. We create a test class named `OrderingCookies`, where each step is implemented as a method. The matching that binds a step to a test method is reified as classical regular expressions (e.g. `(\\d+) for an integer`) or as specific Cucumber expression (e.g. {string} for a string between double quotes).  Method parameters correspond to each matched expression, one after another.
+
+*Note that for easing the configuration process, the feature file and the implementation step class are placed in the same hierarchy, one inside `resources` and the other inside `test/java`.
+
+Setting up or cleaning the context is possible through specific Cucumber annotation (e.g. `@BeforeAll`, `@Before`, `@BeforeStep`, `@After`...). Be careful as most of them have the same name as JUnit ones, but they must be imported from the `io.cucumber.java` package.
+
+```java
+@CucumberContextConfiguration
+@SpringBootTest
+public class OrderingCookies {
+
+    @Autowired
+    private CartModifier cart;
+...
+    private Customer customer;
+    private Set<Item> cartContents;
+
+    @Before
+    public void settingUpContext() {
+        memory.flush();
+    }
+
+    @Given("a customer named {string} with credit card {string}")
+    public void aCustomerNamedWithCreditCard(String customerName, String creditCard) throws AlreadyExistingCustomerException {
+        registry.register(customerName, creditCard);
+    }
+
+    @When("{string} asks for his cart contents")
+    public void customerAsksForHisCartContents(String customerName) {
+        customer = finder.findByName(customerName).get();
+        cartContents = processor.contents(customer);
+    }
+
+    @Then("^there (?:is|are) (\\d+) items? inside the cart$") // Regular Expressions, not Cucumber expression
+    // Note that you cannot mix Cucumber expression such as {int} with regular expressions
+    public void thereAreItemsInsideTheCart(int nbItems) {
+        assertEquals(nbItems, cartContents.size());
+    }
+
+    @When("{string} orders {int} x {string}")
+    public void customerOrders(String customerName, int howMany, String recipe) throws NegativeQuantityException {
+        customer = finder.findByName(customerName).get();
+        Cookies cookie = Cookies.valueOf(recipe);
+        cart.update(customer, new Item(cookie, howMany));
+    }
+
+    @And("the cart contains the following item: {int} x {string}")
+    public void theCartContainsTheFollowingItem(int howMany, String recipe) {
+        Item expected = new Item(Cookies.valueOf(recipe), howMany);
+        assertTrue(cartContents.contains(expected));
+    }
+
+    @And("{string} decides not to buy {int} x {string}")
+    public void customerDecidesNotToBuy(String customerName, int howMany, String recipe) throws NegativeQuantityException {
+        customer = finder.findByName(customerName).get();
+        Cookies cookie = Cookies.valueOf(recipe);
+        cart.update(customer, new Item(cookie, -howMany));
+    }
+
+    @Then("the price of {string}'s cart is equals to {double}")
+    public void thePriceOfSebSCartIsEqualsTo(String customerName, double expectedPrice) {
+        customer = finder.findByName(customerName).get();
+        assertEquals(expectedPrice, processor.price(customer), 0.01);
+    }
+```
+
+### Cucumber-Junit-Spring Setup and execution
+
+In Java, the Cucumber framework relies on JUnit, and some specific setup is also necessary. One additional class with enable the configuration of the JUnit 5 runner with a Cucumber specific plugin, and some options (typically the location of the feature files) can be specified:
+
+```java
+@Suite
+@IncludeEngines("cucumber")
+@SelectClasspathResource("fr/univcotedazur/simpletcfs/features")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "fr.univcotedazur.simpletcfs.features")
+public class RunCucumberIT {
+}
+
+
+
+@RunWith(Cucumber.class)
+@CucumberOptions(features = "src/test/resources")
+public class CucumberIntegrationTest {
+}
+```
+
+This class is only a hook with some configuration options:
+
+   * It is named `RunCucumberIT` so that it will be detected by the *failsafe* plugin as an integration test and thus only run within a `mvn verify` command.
+   * It uses the `@Suite` annotation from the JUnit 5 platform engine, which is the proper way to link Cucumber 7.X and JUnit 5. Take care not to use anymore the old ways, such as `@RunWith(Cucumber.class` that was using JUnit 4 or `@Cucumber` that was supported in Cucumber 6.
+
+
 ## Testing a RestController with the full backend
 
 More to come...
@@ -201,10 +429,6 @@ More to come...
 More to come...
 
 ## Testing a Rest client
-
-More to come...
-
-## BDD in Spring
 
 More to come...
 

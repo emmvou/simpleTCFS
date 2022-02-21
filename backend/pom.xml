@@ -18,6 +18,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <cucumber.version>7.2.3</cucumber.version>
+        <junit.platform.version>1.8.2</junit.platform.version>
+        <maven.plugins.version>3.0.0-M5</maven.plugins.version>
     </properties>
     <dependencies>
         <dependency>
@@ -55,7 +57,7 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-suite</artifactId>
-            <version>1.8.2</version>
+            <version>${junit.platform.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -81,12 +83,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>${maven.plugins.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>${maven.plugins.version}</version>
                 <configuration>
                     <properties>
                         <configurationParameters>
