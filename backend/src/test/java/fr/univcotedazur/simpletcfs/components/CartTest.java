@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class CartTest {
@@ -88,6 +89,7 @@ class CartTest {
         cart.update(john, new Item(Cookies.DARK_TEMPTATION, 3));
         cart.update(john, new Item(Cookies.CHOCOLALALA, 3));
         Set<Item> oracle = Set.of(new Item(Cookies.CHOCOLALALA, 5), new Item(Cookies.DARK_TEMPTATION, 3));
+        assertTrue(oracle.contains(new Item(Cookies.CHOCOLALALA, 5)));
         assertEquals(oracle, processor.contents(john));
     }
 
