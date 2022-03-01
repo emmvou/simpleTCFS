@@ -29,7 +29,6 @@ public class CustomerCareController {
     @PostMapping(path = "register", consumes = APPLICATION_JSON_VALUE) // path is a REST CONTROLLER NAME
     public ResponseEntity<CustomerDTO> register(@RequestBody CustomerDTO cusdto)  {
         // Note that there is no validation at all on the CustomerDto mapped
-        // and no validation on the customer being already
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(convertCustomerToDto(registry.register(cusdto.getName(), cusdto.getCreditCard())));
