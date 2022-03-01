@@ -17,7 +17,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(RecipeCommands.class)
-public class recipeCommandsTest {
+public class RecipeCommandsTest {
 
      @Autowired
      private RecipeCommands client;

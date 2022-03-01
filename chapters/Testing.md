@@ -413,17 +413,134 @@ This class is only a hook with some configuration options:
    * It uses the `@Suite` annotation from the JUnit 5 platform engine, which is the proper way to link Cucumber 7.X and JUnit 5. Take care not to use anymore the old ways, such as `@RunWith(Cucumber.class` that was using JUnit 4 or `@Cucumber` that was supported in Cucumber 6.
 
 
-## Testing a RestController with the full backend
-
-More to come...
-
 ## Testing a RestController in isolation
 
-More to come...
+As a RestController is supposed to only handle interoperability and delegate messages to the business components, a first approach is to unit test it. In Spring, it is possible to start only the Spring MVC container in test mode, with a REST controller being configured and no other Spring components nor the server itsef.
+The `@WebMvcTest` annotation does this by disabling the full auto-configuration mode.
+The class passed as parameter set up the controller to be created in this testing environment (here `RecipeController`).
+On the configuration side, one must note that we add here the `@AutoConfigureWebClient` to avoid error about a missing `RestTemplateBuilder`. This may happen due to conflict between auto-configuration and test configuration in Spring.
+
+Then it is quite easy to reuse the mock support (with `@MockBean`, as shown in the [Mocking](#mocking) section. For the RecipeController, we have to mock the `CatalogExplorator` interface and return a set of Cookies. One can note that in our case, we only return a set of 2 recipes while the real implementation has three of them (to show that we are indeed mocking the recipes here).
+
+The last step consists in injection a component of type `MockMvc` and in using it to perform a call to hit the API, thus the controller under test, and then verify the status response codes and response content. 
+This is done through `MockMvcRequestBuilders`, `MockMvcResultMatchers`, and `MockMvcResultHandlers`, statically imported in our case.
+we thus perfom a `get` and we verify the `status()` and the content of the JSON payload through `jsonPath` methods.
+
+```java
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(RecipeController.class) 
+@AutoConfigureWebClient
+public class RecipeWebMvcTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private CatalogExplorator mockedCat; // the real Catalog component is not created, we have to mock it
+
+    @Test
+    void recipesRestTest() throws Exception {
+        when(mockedCat.listPreMadeRecipes())
+                .thenReturn(Set.of(Cookies.CHOCOLALALA,Cookies.DARK_TEMPTATION)); // only 2 of the 3 enum values
+
+        mockMvc.perform(get(RecipeController.BASE_URI)
+                        .contentType(APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray())
+                    .andExpect(jsonPath("$", hasSize(2)))
+                    .andExpect(jsonPath("$", hasItem("CHOCOLALALA")))
+                    .andExpect(jsonPath("$", hasItem("DARK_TEMPTATION")));
+        }
+
+}
+```
+
+## Testing a RestController with the full backend
+
+If we can test a REST controller is isolation, we can also setup a full backend with the MVC container and the business container up. We can then implement a kind of integration test.
+To do so, we declare a classic `@SpringBootTest` and add a `@AutoConfigureMockMvc` so that the whole backend is started.
+
+The configuration of the test environement is completed by setting a value to the `webEnvironment` variable passed to `@SpringBootTest`. It can take several values:
+
+   * `WebEnvironment.RANDOM_PORT` starts an embedded server with a random port, which is useful to avoir conflict in test environments while being closer to the real application deployment.
+   * `WebEnvironment.DEFINED_PORT` starts an embedded server with a fixed port, usually used in some specific constraints are to be applied on ports.
+   * `WebEnvironment.MOCK` is the default. It loads a web application context and provides a mock web environment. It does not load a real http server, just mocks the entire web server behavior. You gain isolation but it is weaker in terms of integration.
+   * `WebEnvironment.NONE` loads the business part but does not provide any web environment (mocked or not).
+
+Then the test can be written using the same principle as with the isolated test, injecting a `MockMvc`, performing a call to the controller (here `get`), and checking the result. Here the check ensures that the JSON contains the 3 recipes of the real implementation.
+
+One must note that the naming of the test class, ending with *IT*, makes it match with the patterns of the *failsafe* plugin we use [to run integration tests](#running-different-types-of-test-with-maven).
+
+
+```java
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc 
+public class RecipeWebAutoConfigureIT {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    void recipesFullStackTest() throws Exception {
+        mockMvc.perform(get(RecipeController.BASE_URI)
+                        .contentType(APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray())
+                    .andExpect(jsonPath("$", hasSize(3)))
+                    .andExpect(jsonPath("$", hasItem("CHOCOLALALA")))
+                    .andExpect(jsonPath("$", hasItem("DARK_TEMPTATION")))
+                    .andExpect(jsonPath("$", hasItem("SOO_CHOCOLATE")));
+        }
+
+}
+```
+
 
 ## Testing a Rest client
 
-More to come...
+It is also possible to test a REST Client in Spring. To do so, we use the annotation `@RestClientTest` passing as paramter the component implementation class that uses a `RestTemplate` to make REST calls.
+This annotation disables full auto-configuration and only applies configuration relevant to REST client tests, e.g. Jackson support. It also provides a `MockRestServiceServer` instances that can be injected in the test.
+
+When the test is run, only the `recipeCommands` component is created. Then in the test code, we use the `expect` method to specify that a GET call to the mocked server on the "/recipes" route should respond with success and with a specified JSON payload. Next, we call `client.recipes()`, the method being tested that makes the REST call, and checks whether the result being transformed in objects is equals to our set of Cookies enum.
+
+Note that this example is in the [RecipeCommandsTest](../cli/src/test/java/fr/univcotedazur/simpletcfs/cli/commands/recipeCommandsTest.java) within the *cli* project.
+
+```java
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
+@RestClientTest(RecipeCommands.class)
+public class RecipeCommandsTest {
+
+     @Autowired
+     private RecipeCommands client;
+
+    @Autowired
+    private MockRestServiceServer server;
+
+    @Test
+    public void recipesSetTest() {
+
+        server
+                .expect(requestTo("/recipes"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("[\"CHOCOLALALA\",\"DARK_TEMPTATION\",\"SOO_CHOCOLATE\"]", MediaType.APPLICATION_JSON));
+
+        assertEquals(EnumSet.allOf(CookieEnum.class), client.recipes());
+    }
+
+}
+```
 
 ## Some other testing scenarios that could be implemented
 
