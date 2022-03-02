@@ -14,7 +14,7 @@ From Spring 3.0, the controller mechanism enables one to create RESTful servers 
 
 ## A very basic REST Controller: `RecipeController`
 
-We focus on the implementation of a first very simple `@RestController` that serves the catalog of cookie recipes. This annotation declares the class as a component to be instantiated by the Spring MVC container. This separate container handles RESTful http requests while sharing the same namespace as the main Spring container (in which classic `#Component` beans are instantiated). This enables the injection through the auto-wiring of a component that will implement the `CatalogExplorator` interface, i.e., the `Catalog` component in our case.
+We focus on the implementation of a first very simple `@RestController` that serves the catalog of cookie recipes. This annotation declares the class as a component to be instantiated by the Spring MVC container. This separate container handles RESTful http requests while sharing the same namespace as the main Spring container (in which classic `@Component` beans are instantiated). This enables the injection through the auto-wiring of a component that will implement the `CatalogExplorator` interface, i.e., the `Catalog` component in our case.
 
 REST routes are served by annotating methods. The `listAllRecipes()` method is then annotated with `@GetMapping` in which:
 
